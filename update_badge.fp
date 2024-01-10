@@ -1,5 +1,5 @@
-pipeline "update_file" {
-  title       = "Update file"
+pipeline "update_badge" {
+  title       = "Update a README badge, e.g. from mods-57-blue to mods-61-blue"
 
   param "cred" {
     type        = string
@@ -36,8 +36,8 @@ pipeline "update_file" {
     default = "pipelines"
   }
 
-  step "pipeline" "get_file" {
-    pipeline = pipeline.get_file
+  step "pipeline" "get_github_file" {
+    pipeline = pipeline.get_github_file
     args = {
       repository_owner = param.repository_owner
       repository_name = param.repository_name
@@ -63,12 +63,12 @@ pipeline "update_file" {
       message   = param.commit_message
       content   = base64encode(
         replace(
-          step.pipeline.get_file.output.content, 
-          regex("(${param.badge_type}-\\d+-blue)", step.pipeline.get_file.output.content)[0],
+          step.pipeline.get_github_file.output.content, 
+          regex("(${param.badge_type}-\\d+-blue)", step.pipeline.get_github_file.output.content)[0],
           "${param.badge_type}-${step.pipeline.query_algolia.output.entries}-blue"
         )
       )
-      sha       = step.pipeline.get_file.output.sha
+      sha       = step.pipeline.get_github_file.output.sha
     })
   }  
 
@@ -77,15 +77,15 @@ pipeline "update_file" {
   }
 
   output "file_content" {
-    value       = step.pipeline.get_file.output.content
+    value       = step.pipeline.get_github_file.output.content
   }
 
   output "entries" {
-    value       = regex("mods-(\\d+)-blue", step.pipeline.get_file.output.content)[0]
+    value       = regex("mods-(\\d+)-blue", step.pipeline.get_github_file.output.content)[0]
   }
 
   output "target" {
-    value       = regex("(mods-\\d+-blue)", step.pipeline.get_file.output.content)[0]
+    value       = regex("(mods-\\d+-blue)", step.pipeline.get_github_file.output.content)[0]
   }
 
 

@@ -1,5 +1,5 @@
-pipeline "get_file" {
-  title       = "Get file"
+pipeline "get_github_file" {
+  title       = "Get a GitHub file"
 
   param "cred" {
     type        = string
