@@ -81,11 +81,11 @@ pipeline "update_badge" {
   }
 
   output "entries" {
-    value = regex("mods-(\\d+)-blue", step.pipeline.get_github_file.output.content)[0]
+    value = regex("${param.badge_type}-(\\d+)-blue", step.pipeline.get_github_file.output.content)[0]
   }
 
   output "target" {
-    value = regex("(mods-\\d+-blue)", step.pipeline.get_github_file.output.content)[0]
+    value = regex("(${param.badge_type}-\\d+-blue)", step.pipeline.get_github_file.output.content)[0]
   }
 
 
