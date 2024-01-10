@@ -1,23 +1,23 @@
 pipeline "get_github_file" {
-  title       = "Get a GitHub file"
+  title = "Get a GitHub file"
 
   param "cred" {
-    type        = string
-    default     = "default"
+    type    = string
+    default = "default"
   }
 
   param "repository_owner" {
-    type        = string
+    type    = string
     default = "judell"
   }
 
   param "repository_name" {
-    type        = string
+    type    = string
     default = "test"
   }
 
   param "file_path" {
-    type        = string
+    type    = string
     default = "README.md"
   }
 
@@ -27,14 +27,14 @@ pipeline "get_github_file" {
     request_headers = {
       Authorization = "Bearer ${credential.github[param.cred].token}"
     }
-  }  
+  }
 
   output "content" {
-    value       = base64decode(step.http.get_file_contents.response_body.content)
+    value = base64decode(step.http.get_file_contents.response_body.content)
   }
 
   output "sha" {
-    value       = step.http.get_file_contents.response_body.sha
+    value = step.http.get_file_contents.response_body.sha
   }
 
 

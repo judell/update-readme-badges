@@ -1,38 +1,38 @@
 pipeline "update_badge" {
-  title       = "Update a README badge, e.g. from mods-57-blue to mods-61-blue"
+  title = "Update a README badge, e.g. from mods-57-blue to mods-61-blue"
 
   param "cred" {
-    type        = string
-    default     = "default"
+    type    = string
+    default = "default"
   }
 
   param "repository_owner" {
-    type        = string
+    type    = string
     default = "judell"
   }
 
   param "repository_name" {
-    type        = string
+    type    = string
     default = "test"
   }
 
   param "file_path" {
-    type        = string
+    type    = string
     default = "README.md"
   }
 
   param "commit_message" {
-    type        = string
+    type    = string
     default = "updated ${timestamp()}"
   }
 
   param "target_index" {
-    type        = string
+    type    = string
     default = "production_HUB_FLOWPIPE_MODS_PIPELINES"
   }
 
   param "badge_type" {
-    type = string
+    type    = string
     default = "pipelines"
   }
 
@@ -40,8 +40,8 @@ pipeline "update_badge" {
     pipeline = pipeline.get_github_file
     args = {
       repository_owner = param.repository_owner
-      repository_name = param.repository_name
-      file_path = param.file_path
+      repository_name  = param.repository_name
+      file_path        = param.file_path
     }
   }
 
@@ -60,32 +60,32 @@ pipeline "update_badge" {
       Content-Type  = "application/json"
     }
     request_body = jsonencode({
-      message   = param.commit_message
-      content   = base64encode(
+      message = param.commit_message
+      content = base64encode(
         replace(
-          step.pipeline.get_github_file.output.content, 
+          step.pipeline.get_github_file.output.content,
           regex("(${param.badge_type}-\\d+-blue)", step.pipeline.get_github_file.output.content)[0],
           "${param.badge_type}-${step.pipeline.query_algolia.output.entries}-blue"
         )
       )
-      sha       = step.pipeline.get_github_file.output.sha
+      sha = step.pipeline.get_github_file.output.sha
     })
-  }  
+  }
 
   output "algolia_entries" {
-    value       = step.pipeline.query_algolia
+    value = step.pipeline.query_algolia
   }
 
   output "file_content" {
-    value       = step.pipeline.get_github_file.output.content
+    value = step.pipeline.get_github_file.output.content
   }
 
   output "entries" {
-    value       = regex("mods-(\\d+)-blue", step.pipeline.get_github_file.output.content)[0]
+    value = regex("mods-(\\d+)-blue", step.pipeline.get_github_file.output.content)[0]
   }
 
   output "target" {
-    value       = regex("(mods-\\d+-blue)", step.pipeline.get_github_file.output.content)[0]
+    value = regex("(mods-\\d+-blue)", step.pipeline.get_github_file.output.content)[0]
   }
 
 
