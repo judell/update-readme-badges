@@ -5,17 +5,22 @@ pipeline "update_flowpipe_badges" {
     pipeline = pipeline.create_branch
     args = {
       branch_name = replace(timestamp(),":","")
-      repository_owner = "judell"
-      repository_name = "flowpipe-readme"
+      repository_owner = "turbot"
+      repository_name = "flowpipe"
     }
   }
 
+  output "branch_name" {
+    value = step.pipeline.create_flowpipe_branch.output.branch_name
+  }
+
   step "pipeline" "update_flowpipe_mods" {
+    depends_on = [step.pipeline.create_flowpipe_branch]
     pipeline = pipeline.update_badge
     args = {
       branch_name      = step.pipeline.create_flowpipe_branch.output.branch_name
-      repository_owner = "judell"
-      repository_name  = "flowpipe-readme"
+      repository_owner = "turbot"
+      repository_name  = "flowpipe"
       file_path        = "README.md"
       target_index     = "production_HUB_FLOWPIPE_MODS"
       badge_type       = "mods"
@@ -27,8 +32,8 @@ pipeline "update_flowpipe_badges" {
     pipeline   = pipeline.update_badge
     args = {
       branch_name      = step.pipeline.create_flowpipe_branch.output.branch_name
-      repository_owner = "judell"
-      repository_name  = "flowpipe-readme"
+      repository_owner = "turbot"
+      repository_name  = "flowpipe"
       file_path        = "README.md"
       target_index     = "production_HUB_FLOWPIPE_MODS_PIPELINES"
       badge_type       = "pipelines"
@@ -39,8 +44,8 @@ pipeline "update_flowpipe_badges" {
     depends_on = [step.pipeline.update_flowpipe_pipelines]
     pipeline   = github.pipeline.create_pull_request
     args = {
-      repository_owner = "judell"
-      repository_name  = "flowpipe-readme"
+      repository_owner = "turbog"
+      repository_name  = "flowpipe"
       pull_request_title  = "Update Flowpipe badges"
       pull_request_body  = "Update Flowpipe badges"
       base_branch     = "main"
@@ -55,18 +60,19 @@ pipeline "update_steampipe_badges" {
   step "pipeline" "create_steampipe_branch" {
     pipeline = pipeline.create_branch
     args = {
-      repository_owner = "judell"
-      repository_name = "steampipe-readme"
+      repository_owner = "turbot"
+      repository_name = "steampipe"
       branch_name = replace(timestamp(),":","")
     }
   }
 
   step "pipeline" "update_steampipe_plugins" {
+    depends_on = [step.pipeline.create_steampipe_branch]
     pipeline   = pipeline.update_badge
     args = {
       branch_name      = step.pipeline.create_steampipe_branch.output.branch_name
-      repository_owner = "judell"
-      repository_name  = "steampipe-readme"
+      repository_owner = "turbot"
+      repository_name  = "steampipe"
       file_path        = "README.md"
       target_index     = "production_HUB_STEAMPIPE_PLUGINS"
       badge_type       = "apis_supported"
@@ -78,8 +84,8 @@ pipeline "update_steampipe_badges" {
     pipeline   = pipeline.update_badge
     args = {
       branch_name      = step.pipeline.create_steampipe_branch.output.branch_name
-      repository_owner = "judell"
-      repository_name  = "steampipe-readme"
+      repository_owner = "turbot"
+      repository_name  = "steampipe"
       file_path        = "README.md"
       target_index     = "production_HUB_STEAMPIPE_PLUGIN_TABLES"
       badge_type       = "tables"
@@ -91,8 +97,8 @@ pipeline "update_steampipe_badges" {
     pipeline   = pipeline.update_badge
     args = {
       branch_name      = step.pipeline.create_steampipe_branch.output.branch_name
-      repository_owner = "judell"
-      repository_name  = "steampipe-readme"
+      repository_owner = "turbot"
+      repository_name  = "steampipe"
       file_path        = "README.md"
       target_index     = "production_HUB_STEAMPIPE_MODS"
       badge_type       = "mods"
@@ -104,8 +110,8 @@ pipeline "update_steampipe_badges" {
     pipeline   = pipeline.update_badge
     args = {
       branch_name      = step.pipeline.create_steampipe_branch.output.branch_name
-      repository_owner = "judell"
-      repository_name  = "steampipe-readme"
+      repository_owner = "turbot"
+      repository_name  = "steampipe"
       file_path        = "README.md"
       target_index     = "production_HUB_STEAMPIPE_MOD_CONTROLS"
       badge_type       = "controls"
@@ -117,8 +123,8 @@ pipeline "update_steampipe_badges" {
     pipeline   = pipeline.update_badge
     args = {
       branch_name      = step.pipeline.create_steampipe_branch.output.branch_name
-      repository_owner = "judell"
-      repository_name  = "steampipe-readme"
+      repository_owner = "turbot"
+      repository_name  = "steampipe"
       file_path        = "README.md"
       target_index     = "production_HUB_STEAMPIPE_MOD_BENCHMARKS"
       badge_type       = "benchmarks"
@@ -130,8 +136,8 @@ pipeline "update_steampipe_badges" {
     pipeline   = pipeline.update_badge
     args = {
       branch_name      = step.pipeline.create_steampipe_branch.output.branch_name
-      repository_owner = "judell"
-      repository_name  = "steampipe-readme"
+      repository_owner = "turbot"
+      repository_name  = "steampipe"
       file_path        = "README.md"
       target_index     = "production_HUB_STEAMPIPE_MOD_DASHBOARDS"
       badge_type       = "dashboards"
@@ -142,8 +148,8 @@ pipeline "update_steampipe_badges" {
     depends_on = [step.pipeline.update_steampipe_dashboards]
     pipeline   = github.pipeline.create_pull_request
     args = {
-      repository_owner = "judell"
-      repository_name  = "steampipe-readme"
+      repository_owner = "turbot"
+      repository_name  = "steampipe"
       pull_request_title  = "Update Steampipe badges"
       pull_request_body  = "Update Steampipe badges"
       base_branch     = "main"

@@ -8,12 +8,10 @@ pipeline "get_github_file" {
 
   param "repository_owner" {
     type    = string
-    default = "judell"
   }
 
   param "repository_name" {
     type    = string
-    default = "test"
   }
 
   param "file_path" {
