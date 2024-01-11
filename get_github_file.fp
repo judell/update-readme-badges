@@ -21,9 +21,14 @@ pipeline "get_github_file" {
     default = "README.md"
   }
 
+  param "branch_name" {
+    type    = string
+    default = "main"
+  }
+
   step "http" "get_file_contents" {
     method = "get"
-    url    = "https://api.github.com/repos/${param.repository_owner}/${param.repository_name}/contents/${param.file_path}"
+    url    = "https://api.github.com/repos/${param.repository_owner}/${param.repository_name}/contents/${param.file_path}?ref=${param.branch_name}"
     request_headers = {
       Authorization = "Bearer ${credential.github[param.cred].token}"
     }

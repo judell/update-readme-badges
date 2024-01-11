@@ -6,6 +6,11 @@ pipeline "update_badge" {
     default = "default"
   }
 
+  param "branch_name" {
+    type    = "string"
+    default = "main"
+  }
+
   param "repository_owner" {
     type    = string
     default = "judell"
@@ -42,6 +47,7 @@ pipeline "update_badge" {
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
       file_path        = param.file_path
+      branch_name      = param.branch_name
     }
   }
 
@@ -69,6 +75,7 @@ pipeline "update_badge" {
         )
       )
       sha = step.pipeline.get_github_file.output.sha
+      branch = param.branch_name
     })
   }
 
