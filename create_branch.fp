@@ -3,16 +3,16 @@ pipeline "create_branch" {
   description = "Creates a new branch in a specified repository."
 
   param "cred" {
-    type        = string
-    default     = "default"
+    type    = string
+    default = "default"
   }
 
   param "repository_owner" {
-    type        = string
+    type = string
   }
 
   param "repository_name" {
-    type        = string
+    type = string
   }
 
   param "branch_name" {
@@ -28,7 +28,7 @@ pipeline "create_branch" {
 
   step "http" "get_latest_commit_sha" {
     method = "get"
-    url    = "https://api.github.com/repos/${param.repository_owner}/${param.repository_name}/branches/${param.source_branch}" 
+    url    = "https://api.github.com/repos/${param.repository_owner}/${param.repository_name}/branches/${param.source_branch}"
     request_headers = {
       Authorization = "Bearer ${credential.github[param.cred].token}"
     }
@@ -54,11 +54,11 @@ pipeline "create_branch" {
   }
 
   output "branch_name" {
-    value       = replace(step.http.create_branch.response_body.ref, "refs/heads/", "")
+    value = replace(step.http.create_branch.response_body.ref, "refs/heads/", "")
   }
 
   output "latest_commit_sha" {
-    value       = step.http.get_latest_commit_sha.response_body.commit.sha
+    value = step.http.get_latest_commit_sha.response_body.commit.sha
   }
 
 }

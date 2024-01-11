@@ -74,7 +74,7 @@ pipeline "update_badge" {
           "${param.badge_type}-${step.pipeline.query_algolia.output.entries}-blue"
         )
       )
-      sha = step.pipeline.get_github_file.output.sha
+      sha    = step.pipeline.get_github_file.output.sha
       branch = param.branch_name
     })
   }

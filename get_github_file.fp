@@ -7,11 +7,11 @@ pipeline "get_github_file" {
   }
 
   param "repository_owner" {
-    type    = string
+    type = string
   }
 
   param "repository_name" {
-    type    = string
+    type = string
   }
 
   param "file_path" {
