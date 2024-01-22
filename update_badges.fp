@@ -1,5 +1,5 @@
 pipeline "update_flowpipe_badges" {
-  title = "Update README.md badges"
+  title = "Update Flowpipe README.md badges"
 
   step "pipeline" "create_flowpipe_branch" {
     pipeline = pipeline.create_branch
@@ -41,6 +41,7 @@ pipeline "update_flowpipe_badges" {
 }
 
 pipeline "update_steampipe_badges" {
+  title = "Update Steampipe README.md badges"
 
   step "pipeline" "create_steampipe_branch" {
     pipeline = pipeline.create_branch
@@ -57,28 +58,8 @@ pipeline "update_steampipe_badges" {
     })
   }
 
-  step "pipeline" "update_steampipe_tables" {
-    depends_on = [step.pipeline.update_steampipe_plugins]
-    pipeline   = pipeline.update_badge
-    args = merge(local.steampipe_update_args, {
-      branch_name  = step.pipeline.create_steampipe_branch.output.branch_name
-      target_index = "production_HUB_STEAMPIPE_PLUGIN_TABLES"
-      badge_type   = "tables"
-    })
-  }
-
-  step "pipeline" "update_steampipe_mods" {
-    depends_on = [step.pipeline.update_steampipe_tables]
-    pipeline   = pipeline.update_badge
-    args = merge(local.steampipe_update_args, {
-      branch_name  = step.pipeline.create_steampipe_branch.output.branch_name
-      target_index = "production_HUB_STEAMPIPE_MODS"
-      badge_type   = "mods"
-    })
-  }
-
   step "pipeline" "update_steampipe_controls" {
-    depends_on = [step.pipeline.update_steampipe_mods]
+    depends_on = [step.pipeline.update_steampipe_plugins]
     pipeline   = pipeline.update_badge
     args = merge(local.steampipe_update_args, {
       branch_name  = step.pipeline.create_steampipe_branch.output.branch_name
@@ -87,18 +68,8 @@ pipeline "update_steampipe_badges" {
     })
   }
 
-  step "pipeline" "update_steampipe_benchmarks" {
-    depends_on = [step.pipeline.update_steampipe_controls]
-    pipeline   = pipeline.update_badge
-    args = merge(local.steampipe_update_args, {
-      branch_name  = step.pipeline.create_steampipe_branch.output.branch_name
-      target_index = "production_HUB_STEAMPIPE_MOD_BENCHMARKS"
-      badge_type   = "benchmarks"
-    })
-  }
-
   step "pipeline" "update_steampipe_dashboards" {
-    depends_on = [step.pipeline.update_steampipe_benchmarks]
+    depends_on = [step.pipeline.update_steampipe_controls]
     pipeline   = pipeline.update_badge
     args = merge(local.steampipe_update_args, {
       branch_name  = step.pipeline.create_steampipe_branch.output.branch_name

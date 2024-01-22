@@ -1,7 +1,7 @@
 locals {
-  repository_owner          = "judell"
-  flowpipe_repository_name  = "flowpipe-readme"
-  steampipe_repository_name = "steampipe-readme"
+  repository_owner          = "turbot"
+  flowpipe_repository_name  = "flowpipe"
+  steampipe_repository_name = "steampipe"
 }
 
 locals {
