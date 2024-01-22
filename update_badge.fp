@@ -31,6 +31,11 @@ pipeline "update_badge" {
     default = "updated ${timestamp()}"
   }
 
+  param "data_source" {
+    type    = string
+    default = "algolia"
+  }
+
   param "target_index" {
     type    = string
     default = "production_HUB_FLOWPIPE_MODS_PIPELINES"
@@ -52,13 +57,20 @@ pipeline "update_badge" {
   }
 
   step "pipeline" "query_algolia" {
+    if = param.data_source == "algolia"
     pipeline = pipeline.query_algolia
     args = {
-      name = param.target_index
+      name        = param.target_index
     }
   }
 
-  step "http" "update_file_contents" {
+  step "pipeline" "query_slack" {
+    if = param.data_source == "slack"
+    pipeline    = pipeline.query_slack
+  }
+
+  step "http" "update_file_contents_algolia" {
+    if     = param.data_source == "algolia"
     method = "put"
     url    = "https://api.github.com/repos/${param.repository_owner}/${param.repository_name}/contents/${param.file_path}"
     request_headers = {
@@ -79,22 +91,39 @@ pipeline "update_badge" {
     })
   }
 
+  step "http" "update_file_contents_slack" {
+    if     = param.data_source == "slack"
+    method = "put"
+    url    = "https://api.github.com/repos/${param.repository_owner}/${param.repository_name}/contents/${param.file_path}"
+    request_headers = {
+      Authorization = "Bearer ${credential.github[param.cred].token}"
+      Content-Type  = "application/json"
+    }
+    request_body = jsonencode({
+      message = param.commit_message
+      content = base64encode(
+        replace(
+          step.pipeline.get_github_file.output.content,
+          regex("(slack-\\d+-blue)", step.pipeline.get_github_file.output.content)[0],
+          "slack-${step.pipeline.query_slack.output.user_count}-blue"
+        )
+      )
+      sha    = step.pipeline.get_github_file.output.sha
+      branch = param.branch_name
+    })
+  }
+
   output "algolia_entries" {
-    value = step.pipeline.query_algolia
+    value = param.data_source == "algolia" ? step.pipeline.query_algolia.output.entries : ""
+  }
+
+  output "algolia_target" {
+    value = param.data_source == "algolia" ? regex("(${param.badge_type}-\\d+-blue)", step.pipeline.get_github_file.output.content)[0] : ""
   }
 
   output "file_content" {
     value = step.pipeline.get_github_file.output.content
   }
-
-  output "entries" {
-    value = regex("${param.badge_type}-(\\d+)-blue", step.pipeline.get_github_file.output.content)[0]
-  }
-
-  output "target" {
-    value = regex("(${param.badge_type}-\\d+-blue)", step.pipeline.get_github_file.output.content)[0]
-  }
-
 
 }
 

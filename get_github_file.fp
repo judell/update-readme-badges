@@ -40,5 +40,9 @@ pipeline "get_github_file" {
     value = step.http.get_file_contents.response_body.sha
   }
 
+  output "args" {
+    value = [ param.repository_owner, param.repository_name, param.file_path, param.branch_name]
+  }
+
 
 }

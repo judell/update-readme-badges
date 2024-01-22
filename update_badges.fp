@@ -107,8 +107,19 @@ pipeline "update_steampipe_badges" {
     })
   }
 
-  step "pipeline" "create_steampipe_pr" {
+  step "pipeline" "update_steampipe_slack" {
     depends_on = [step.pipeline.update_steampipe_dashboards]
+    pipeline   = pipeline.update_badge
+    args = merge(local.steampipe_update_args, {
+      branch_name  = step.pipeline.create_steampipe_branch.output.branch_name
+      data_source = "slack"
+      target_index = ""
+      badge_type   = ""
+    })
+  }
+
+  step "pipeline" "create_steampipe_pr" {
+    depends_on = [step.pipeline.update_steampipe_slack]
     pipeline   = github.pipeline.create_pull_request
     args = merge(local.steampipe_pr_args, {
       head_branch = step.pipeline.create_steampipe_branch.output.branch_name
