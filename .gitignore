@@ -1,3 +1,3 @@
 *.jsonl
-.flowpipe
+.flowpipe/*
 .mod.cache.json
