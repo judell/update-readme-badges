@@ -57,60 +57,54 @@ pipeline "update_badge" {
   }
 
   step "pipeline" "query_algolia" {
-    if = param.data_source == "algolia"
+    if       = param.data_source == "algolia"
     pipeline = pipeline.query_algolia
     args = {
-      name        = param.target_index
+      name = param.target_index
     }
   }
 
   step "pipeline" "query_slack" {
+    if       = param.data_source == "slack"
+    pipeline = pipeline.query_slack
+  }
+
+  step "pipeline" "update_file_contents_algolia" {
+    if = param.data_source == "algolia"
+
+    pipeline = pipeline.update_file_contents
+
+    args = {
+      cred               = param.cred
+      repository_owner   = param.repository_owner
+      repository_name    = param.repository_name
+      file_path          = param.file_path
+      branch_name        = param.branch_name
+      commit_message     = param.commit_message
+      original_content   = step.pipeline.get_github_file.output.content
+      target_regex       = "(${param.badge_type}-\\d+-blue)"
+      replacement_string = "${param.badge_type}-${step.pipeline.query_algolia.output.entries}-blue"
+      sha                = step.pipeline.get_github_file.output.sha
+    }
+  }
+
+  step "pipeline" "update_file_contents_slack" {
     if = param.data_source == "slack"
-    pipeline    = pipeline.query_slack
-  }
 
-  step "http" "update_file_contents_algolia" {
-    if     = param.data_source == "algolia"
-    method = "put"
-    url    = "https://api.github.com/repos/${param.repository_owner}/${param.repository_name}/contents/${param.file_path}"
-    request_headers = {
-      Authorization = "Bearer ${credential.github[param.cred].token}"
-      Content-Type  = "application/json"
-    }
-    request_body = jsonencode({
-      message = param.commit_message
-      content = base64encode(
-        replace(
-          step.pipeline.get_github_file.output.content,
-          regex("(${param.badge_type}-\\d+-blue)", step.pipeline.get_github_file.output.content)[0],
-          "${param.badge_type}-${step.pipeline.query_algolia.output.entries}-blue"
-        )
-      )
-      sha    = step.pipeline.get_github_file.output.sha
-      branch = param.branch_name
-    })
-  }
+    pipeline = pipeline.update_file_contents
 
-  step "http" "update_file_contents_slack" {
-    if     = param.data_source == "slack"
-    method = "put"
-    url    = "https://api.github.com/repos/${param.repository_owner}/${param.repository_name}/contents/${param.file_path}"
-    request_headers = {
-      Authorization = "Bearer ${credential.github[param.cred].token}"
-      Content-Type  = "application/json"
+    args = {
+      cred               = param.cred
+      repository_owner   = param.repository_owner
+      repository_name    = param.repository_name
+      file_path          = param.file_path
+      branch_name        = param.branch_name
+      commit_message     = param.commit_message
+      original_content   = step.pipeline.get_github_file.output.content
+      target_regex       = "(slack-\\d+-blue)"
+      replacement_string = "slack-${step.pipeline.query_slack.output.user_count}-blue"
+      sha                = step.pipeline.get_github_file.output.sha
     }
-    request_body = jsonencode({
-      message = param.commit_message
-      content = base64encode(
-        replace(
-          step.pipeline.get_github_file.output.content,
-          regex("(slack-\\d+-blue)", step.pipeline.get_github_file.output.content)[0],
-          "slack-${step.pipeline.query_slack.output.user_count}-blue"
-        )
-      )
-      sha    = step.pipeline.get_github_file.output.sha
-      branch = param.branch_name
-    })
   }
 
   output "algolia_entries" {
