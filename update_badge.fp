@@ -86,6 +86,7 @@ pipeline "update_badge" {
       replacement_string = "${param.badge_type}-${step.pipeline.query_algolia.output.entries}-blue"
       sha                = step.pipeline.get_github_file.output.sha
     }
+
   }
 
   step "pipeline" "update_file_contents_slack" {
@@ -105,18 +106,16 @@ pipeline "update_badge" {
       replacement_string = "slack-${step.pipeline.query_slack.output.user_count}-blue"
       sha                = step.pipeline.get_github_file.output.sha
     }
+
   }
 
-  output "algolia_entries" {
-    value = param.data_source == "algolia" ? step.pipeline.query_algolia.output.entries : ""
-  }
-
-  output "algolia_target" {
-    value = param.data_source == "algolia" ? regex("(${param.badge_type}-\\d+-blue)", step.pipeline.get_github_file.output.content)[0] : ""
-  }
-
-  output "file_content" {
-    value = step.pipeline.get_github_file.output.content
+  output "any_changed" {
+    value = anytrue(
+      [
+        param.data_source == "algolia" ? step.pipeline.update_file_contents_algolia.output.changed : false,
+        param.data_source == "slack" ? step.pipeline.update_file_contents_slack.output.changed : false
+      ]
+    )
   }
 
 }

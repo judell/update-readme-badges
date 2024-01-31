@@ -18,6 +18,7 @@ pipeline "update_flowpipe_badges" {
       target_index = "production_HUB_FLOWPIPE_MODS"
       badge_type   = "mods"
     })
+
   }
 
   step "pipeline" "update_flowpipe_pipelines" {
@@ -30,11 +31,27 @@ pipeline "update_flowpipe_badges" {
     })
   }
 
+  step "transform" "any_changed" {
+    value = anytrue([
+      step.pipeline.update_flowpipe_mods.output.any_changed,
+      step.pipeline.update_flowpipe_pipelines.output.any_changed
+    ])
+  }
+
   step "pipeline" "create_flowpipe_pr" {
     depends_on = [step.pipeline.update_flowpipe_pipelines]
+    if         = step.transform.any_changed.value
     pipeline   = github.pipeline.create_pull_request
     args = merge(local.flowpipe_pr_args, {
       head_branch = step.pipeline.create_flowpipe_branch.output.branch_name
+    })
+  }
+
+  step "pipeline" "delete_branch" {
+    if       = !step.transform.any_changed.value
+    pipeline = pipeline.delete_branch
+    args = merge(local.flowpipe_branch_args, {
+      branch_name = step.pipeline.create_flowpipe_branch.output.branch_name
     })
   }
 
@@ -83,17 +100,35 @@ pipeline "update_steampipe_badges" {
     pipeline   = pipeline.update_badge
     args = merge(local.steampipe_update_args, {
       branch_name  = step.pipeline.create_steampipe_branch.output.branch_name
-      data_source = "slack"
+      data_source  = "slack"
       target_index = ""
       badge_type   = ""
     })
   }
 
+  step "transform" "any_changed" {
+    value = anytrue([
+      step.pipeline.update_steampipe_plugins.output.any_changed,
+      step.pipeline.update_steampipe_controls.output.any_changed,
+      step.pipeline.update_steampipe_dashboards.output.any_changed,
+      step.pipeline.update_steampipe_slack.output.any_changed
+    ])
+  }
+
   step "pipeline" "create_steampipe_pr" {
     depends_on = [step.pipeline.update_steampipe_slack]
+    if         = step.transform.any_changed.value
     pipeline   = github.pipeline.create_pull_request
     args = merge(local.steampipe_pr_args, {
       head_branch = step.pipeline.create_steampipe_branch.output.branch_name
+    })
+  }
+
+  step "pipeline" "delete_branch" {
+    if       = !step.transform.any_changed.value
+    pipeline = pipeline.delete_branch
+    args = merge(local.steampipe_branch_args, {
+      branch_name = step.pipeline.create_steampipe_branch.output.branch_name
     })
   }
 

@@ -1,6 +1,6 @@
 pipeline "update_file_contents" {
   param "cred" {
-    type = string
+    type    = string
     default = "default"
   }
 
@@ -17,7 +17,7 @@ pipeline "update_file_contents" {
   }
 
   param "branch_name" {
-    type = string
+    type    = string
     default = "main"
   }
 
@@ -49,7 +49,24 @@ pipeline "update_file_contents" {
     )
   }
 
+  step "transform" "changed" {
+    value = param.original_content != step.transform.replace_content.value
+  }
+
+  output "original_content" {
+    value = substr(param.original_content, 0, 200)
+  }
+
+  output "changed_content" {
+    value = substr(step.transform.replace_content.value, 0, 200)
+  }
+
+  output "changed" {
+    value = step.transform.changed.value
+  }
+
   step "http" "update_github_file" {
+    if     = step.transform.changed.value
     method = "put"
     url    = "https://api.github.com/repos/${param.repository_owner}/${param.repository_name}/contents/${param.file_path}"
     request_headers = {
