@@ -26,7 +26,6 @@ pipeline "update_powerpipe_badges" {
     args = merge(local.powerpipe_update_args, {
       branch_name  = step.transform.extract_branch_name.value
       data_source  = "slack"
-      badge_type   = "slack"
     })
   }
 

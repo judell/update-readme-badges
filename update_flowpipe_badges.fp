@@ -42,7 +42,6 @@ pipeline "update_flowpipe_badges" {
     args = merge(local.flowpipe_update_args, {
       branch_name  = step.transform.extract_branch_name.value
       data_source  = "slack"
-      badge_type   = "slack"
     })
   }
 

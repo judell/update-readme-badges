@@ -26,7 +26,6 @@ pipeline "update_steampipe_badges" {
     args = merge(local.steampipe_update_args, {
       branch_name  = step.transform.extract_branch_name.value
       data_source  = "slack"
-      badge_type   = "apis_supported"
     })
   }
 
