@@ -68,12 +68,8 @@ pipeline "update_badge" {
     pipeline = pipeline.query_slack
   }
 
-  step "pipeline" "update_file_contents_algolia" {
-    if = param.data_source == "algolia"
-
-    pipeline = pipeline.update_file_contents
-
-    args = {
+  step "transform" "common_args" {
+    value = {
       cred               = param.cred
       repository_owner   = param.repository_owner
       repository_name    = param.repository_name
@@ -81,10 +77,19 @@ pipeline "update_badge" {
       branch_name        = param.branch_name
       commit_message     = param.commit_message
       original_content   = step.pipeline.get_github_file.output.content
-      target_regex       = "(${param.badge_type}-\\d+-blue)"
-      replacement_string = "${param.badge_type}-${step.pipeline.query_algolia.output.entries}-blue"
-      sha                = step.pipeline.get_github_file.output.sha
+      sha                = step.pipeline.get_github_file.output.sha      
     }
+  }
+
+  step "pipeline" "update_file_contents_algolia" {
+    if = param.data_source == "algolia"
+
+    pipeline = pipeline.update_file_contents
+
+    args = merge(step.transform.common_args.value, {
+      target_regex       = "(${param.badge_type}-\\d+-blue)",
+      replacement_string = "${param.badge_type}-${step.pipeline.query_algolia.output.entries}-blue"
+    })
 
   }
 
@@ -93,18 +98,10 @@ pipeline "update_badge" {
 
     pipeline = pipeline.update_file_contents
 
-    args = {
-      cred               = param.cred
-      repository_owner   = param.repository_owner
-      repository_name    = param.repository_name
-      file_path          = param.file_path
-      branch_name        = param.branch_name
-      commit_message     = param.commit_message
-      original_content   = step.pipeline.get_github_file.output.content
-      target_regex       = "(slack-\\d+-blue)"
+    args = merge(step.transform.common_args.value, {
+      target_regex       = "(slack-\\d+-blue)",
       replacement_string = "slack-${step.pipeline.query_slack.output.user_count}-blue"
-      sha                = step.pipeline.get_github_file.output.sha
-    }
+    })
 
   }
 
