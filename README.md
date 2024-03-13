@@ -1,4 +1,4 @@
-Pipelines to update the badge counts for Flowpipe and Steampipe.
+Pipelines to update the badge counts for Steampipe, Flowpipe, and Powerpipe.
 
 ```
 flowpipe pipeline run update_steampipe_badges
