@@ -1,20 +1,24 @@
 locals {
-  repository_owner = "judell"
+  repository_owner = "judell"  # for testing, use turbot in production
+}
+
+locals {
+
   base_branch_args = {
     branch_name      = replace(timestamp(), ":", "")
-    repository_owner = "judell"
+    repository_owner = local.repository_owner
   }
 
   base_update_args = {
     branch_name      = ""
-    repository_owner = "judell"
+    repository_owner = local.repository_owner
     file_path        = "README.md"
     target_index     = ""
     badge_type       = ""
   }
 
   base_pr_args = {
-    repository_owner   = "judell"
+    repository_owner   = local.repository_owner
     pull_request_title = "Update badges"
     pull_request_body  = "Update badges"
     base_branch        = "main"
@@ -22,9 +26,9 @@ locals {
   }
   
   repositories = {
-    flowpipe  = "flowpipe-readme",
-    steampipe = "steampipe-readme",
-    powerpipe = "powerpipe-readme"
+    flowpipe  = "flowpipe-readme",  # use `flowpipe` in production
+    steampipe = "steampipe-readme", # use `steampipe` in production
+    powerpipe = "powerpipe-readme"  # use `powerpipe` in production
   }
 }
 
