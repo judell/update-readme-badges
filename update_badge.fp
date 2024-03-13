@@ -7,7 +7,7 @@ pipeline "update_badge" {
   }
 
   param "branch_name" {
-    type    = "string"
+    type    = string
     default = "main"
   }
 

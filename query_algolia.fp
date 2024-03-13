@@ -2,11 +2,11 @@ pipeline "query_algolia" {
   title = "Query Algolia"
 
   param "name" {
-    type = "string"
+    type = string
   }
 
   step "query" "get_indexes" {
-    connection_string = "postgres://steampipe@localhost:9193/steampipe"
+    database = "postgres://steampipe@localhost:9193/steampipe"
     sql               = <<EOQ
       select name, entries from algolia_index where name = '${param.name}'
     EOQ

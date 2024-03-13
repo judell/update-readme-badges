@@ -2,7 +2,7 @@ pipeline "query_slack" {
   title = "Query Slack"
 
   step "query" "get_user_count" {
-    connection_string = "postgres://steampipe@localhost:9193/steampipe"
+    database = "postgres://steampipe@localhost:9193/steampipe"
     sql               = <<EOQ
       select count(*) from slack_user
     EOQ
