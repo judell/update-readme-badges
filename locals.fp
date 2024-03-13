@@ -2,6 +2,7 @@ locals {
   repository_owner          = "judell"
   flowpipe_repository_name  = "flowpipe-readme"
   steampipe_repository_name = "steampipe-readme"
+  powerpipe_repository_name = "powerpipe-readme"  
 }
 
 locals {
@@ -59,6 +60,37 @@ locals {
   }
 
 }
+
+locals {
+
+  powerpipe_branch_args = {
+    branch_name      = replace(timestamp(), ":", "")
+    repository_owner = local.repository_owner
+    repository_name  = local.powerpipe_repository_name
+  }
+
+  powerpipe_update_args = {
+    branch_name      = ""
+    repository_owner = local.repository_owner
+    repository_name  = local.powerpipe_repository_name
+    file_path        = "README.md"
+    target_index     = ""
+    badge_type       = ""
+  }
+
+  powerpipe_pr_args = {
+    repository_owner   = local.repository_owner
+    repository_name    = local.powerpipe_repository_name
+    pull_request_title = "Update Powerpipe badges"
+    pull_request_body  = "Update Powerpipe badges"
+    base_branch        = "main"
+    head_branch        = ""
+  }
+
+}
+
+
+
 
 
 
