@@ -15,6 +15,7 @@ pipeline "update_powerpipe_badges" {
     args = merge(local.powerpipe_update_args, {
       branch_name  = step.transform.extract_branch_name.value
       target_index = "production_HUB_POWERPIPE_MODS"
+      data_source = "algolia"
       badge_type   = "mods"
     })
   }
@@ -25,8 +26,7 @@ pipeline "update_powerpipe_badges" {
     args = merge(local.powerpipe_update_args, {
       branch_name  = step.transform.extract_branch_name.value
       data_source  = "slack"
-      target_index = ""
-      badge_type   = ""
+      badge_type   = "slack"
     })
   }
 

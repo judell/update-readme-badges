@@ -15,6 +15,7 @@ pipeline "update_steampipe_badges" {
     args = merge(local.steampipe_update_args, {
       branch_name  = step.transform.extract_branch_name.value
       target_index = "production_HUB_STEAMPIPE_PLUGINS"
+      data_source  = "algolia"
       badge_type   = "apis_supported"
     })
   }
@@ -25,8 +26,7 @@ pipeline "update_steampipe_badges" {
     args = merge(local.steampipe_update_args, {
       branch_name  = step.transform.extract_branch_name.value
       data_source  = "slack"
-      target_index = ""
-      badge_type   = ""
+      badge_type   = "apis_supported"
     })
   }
 

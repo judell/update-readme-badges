@@ -19,6 +19,7 @@ pipeline "update_flowpipe_badges" {
     args = merge(local.flowpipe_update_args, {
       branch_name  = step.transform.extract_branch_name.value
       target_index = "production_HUB_FLOWPIPE_MODS"
+      data_source = "algolia"
       badge_type   = "mods"
     })
 
@@ -30,15 +31,26 @@ pipeline "update_flowpipe_badges" {
     args = merge(local.flowpipe_update_args, {
       branch_name  = step.transform.extract_branch_name.value
       target_index = "production_HUB_FLOWPIPE_MODS_PIPELINES"
+      data_source  = "algolia"
       badge_type   = "pipelines"
     })
   }
 
+  step "pipeline" "update_flowpipe_slack" {
+    depends_on = [step.pipeline.update_flowpipe_pipelines]
+    pipeline   = pipeline.update_badge
+    args = merge(local.flowpipe_update_args, {
+      branch_name  = step.transform.extract_branch_name.value
+      data_source  = "slack"
+      badge_type   = "slack"
+    })
+  }
 
   step "transform" "any_changed" {
     value = anytrue([
       step.pipeline.update_flowpipe_mods.output.any_changed,
-      step.pipeline.update_flowpipe_pipelines.output.any_changed
+      step.pipeline.update_flowpipe_pipelines.output.any_changed,
+      step.pipeline.update_flowpipe_slack.output.any_changed,
     ])
   }
 
