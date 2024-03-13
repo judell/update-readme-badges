@@ -8,22 +8,18 @@ pipeline "update_badge" {
 
   param "branch_name" {
     type    = string
-    default = "main"
   }
 
   param "repository_owner" {
     type    = string
-    default = "judell"
   }
 
   param "repository_name" {
     type    = string
-    default = "test"
   }
 
   param "file_path" {
     type    = string
-    default = "README.md"
   }
 
   param "commit_message" {
@@ -33,7 +29,7 @@ pipeline "update_badge" {
 
   param "data_source" {
     type    = string
-    default = "algolia"
+    default = ""
   }
 
   param "target_index" {
@@ -42,7 +38,6 @@ pipeline "update_badge" {
 
   param "badge_type" {
     type    = string
-    default = "pipelines"
   }
 
   step "pipeline" "get_github_file" {
