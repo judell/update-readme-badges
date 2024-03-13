@@ -38,7 +38,6 @@ pipeline "update_badge" {
 
   param "target_index" {
     type    = string
-    default = "production_HUB_FLOWPIPE_MODS_PIPELINES"
   }
 
   param "badge_type" {
