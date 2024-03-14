@@ -37,7 +37,6 @@ pipeline "update_powerpipe_badges" {
   }
 
   step "pipeline" "create_powerpipe_pr" {
-    depends_on = [step.pipeline.update_powerpipe_slack]
     if         = step.transform.any_changed.value
     pipeline   = github.pipeline.create_pull_request
     args = merge(local.powerpipe_pr_args, {

@@ -37,7 +37,6 @@ pipeline "update_steampipe_badges" {
   }
 
   step "pipeline" "create_steampipe_pr" {
-    depends_on = [step.pipeline.update_steampipe_slack]
     if         = step.transform.any_changed.value
     pipeline   = github.pipeline.create_pull_request
     args = merge(local.steampipe_pr_args, {

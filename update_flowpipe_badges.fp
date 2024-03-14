@@ -54,7 +54,6 @@ pipeline "update_flowpipe_badges" {
   }
 
   step "pipeline" "create_flowpipe_pr" {
-    depends_on = [step.pipeline.update_flowpipe_pipelines]
     if         = step.transform.any_changed.value
     pipeline   = github.pipeline.create_pull_request
     args = merge(local.flowpipe_pr_args, {
